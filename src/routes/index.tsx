@@ -152,7 +152,7 @@ function Index() {
               onClick={toggleAdmin}
               className={cn(
                 "glass inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors hover:bg-white/10",
-                admin ? "text-success" : "text-muted-foreground",
+                admin ? "text-foreground" : "text-muted-foreground",
               )}
               aria-label={admin ? "Lock admin" : "Unlock admin"}
             >
