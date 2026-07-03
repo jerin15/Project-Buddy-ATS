@@ -386,11 +386,9 @@ function TimelinePanel({ projects }: { projects: Project[] }) {
                   <div
                     className={cn(
                       "h-full",
-                      overdue ? "bg-destructive/70" :
-                      costOver ? "bg-gradient-to-r from-destructive to-orange-400" :
-                      p.status === "done" ? "bg-success/70" :
-                      p.status === "paused" ? "bg-warning/70" :
-                      "bg-gradient-to-r from-primary to-accent",
+                      overdue || costOver ? "bg-destructive/80" :
+                      p.status === "paused" ? "bg-muted-foreground/60" :
+                      "bg-foreground/80",
                     )}
                     style={{ width: `${elapsed}%` }}
                   />
