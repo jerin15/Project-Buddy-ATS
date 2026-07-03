@@ -315,14 +315,9 @@ function PortfolioBar({ pct }: { pct: number }) {
   const capped = Math.min(pct, 100);
   const over = pct > 100;
   return (
-    <div className="h-3 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
+    <div className="h-2.5 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
       <div
-        className={cn(
-          "h-full rounded-full transition-all",
-          over
-            ? "bg-gradient-to-r from-destructive to-orange-400"
-            : "bg-gradient-to-r from-primary via-accent to-primary",
-        )}
+        className={cn("h-full rounded-full transition-all", over ? "bg-destructive" : "bg-foreground/85")}
         style={{ width: `${capped}%` }}
       />
     </div>
