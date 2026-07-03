@@ -222,7 +222,7 @@ function Index() {
                 </span>
               </div>
             </div>
-            <span className={cn("text-sm font-semibold tabular-nums", portfolioPct > 100 ? "text-destructive" : "text-primary")}>
+            <span className={cn("text-sm font-semibold tabular-nums", portfolioPct > 100 ? "text-destructive" : "text-foreground")}>
               {Math.round(portfolioPct)}%
             </span>
           </div>
