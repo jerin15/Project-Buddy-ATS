@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Plus, Trash2, Clock, AlertTriangle, TrendingUp, Pencil, Check,
-  Lock, Unlock, Copy, Calendar, LayoutDashboard,
+  Lock, Unlock, Copy, Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
