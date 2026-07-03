@@ -514,9 +514,9 @@ function MetricBar({
 
 function StatusBadge({ status }: { status: Project["status"] }) {
   const map = {
-    active: { label: "Active", cls: "bg-success/15 text-success border-success/30" },
-    paused: { label: "Paused", cls: "bg-warning/15 text-warning border-warning/30" },
-    done: { label: "Done", cls: "bg-white/10 text-muted-foreground border-white/15" },
+    active: { label: "Active", cls: "bg-white/10 text-foreground border-white/20" },
+    paused: { label: "Paused", cls: "bg-white/5 text-muted-foreground border-white/15" },
+    done: { label: "Done", cls: "bg-transparent text-muted-foreground border-white/10" },
   } as const;
   const s = map[status];
   return <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium", s.cls)}>{s.label}</span>;
