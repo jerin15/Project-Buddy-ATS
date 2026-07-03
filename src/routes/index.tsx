@@ -76,6 +76,19 @@ function Index() {
   const [editing, setEditing] = useState<Project | null>(null);
   const [admin, setAdmin] = useState(false);
   const [passOpen, setPassOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const saved = (localStorage.getItem("tracker.theme.v1") as "light" | "dark" | null) ?? "light";
+    setTheme(saved);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("tracker.theme.v1", theme);
+  }, [theme]);
 
   useEffect(() => {
     setProjects(load());
