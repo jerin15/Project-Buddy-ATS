@@ -136,10 +136,10 @@ function Index() {
         <div className="mx-auto max-w-6xl px-5 py-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="glass-strong flex h-10 w-10 items-center justify-center shrink-0">
-              <LayoutDashboard className="h-5 w-5 text-primary" />
+              <DirhamSymbol className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-gradient truncate">
+              <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">
                 Project Tracker
               </h1>
               <p className="text-[11px] sm:text-xs text-muted-foreground">
