@@ -132,7 +132,7 @@ function Index() {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-white/[0.04] backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-foreground/10 bg-foreground/5 backdrop-blur-xl">
         <div className="mx-auto max-w-6xl px-5 py-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="glass-strong flex h-10 w-10 items-center justify-center shrink-0">
@@ -151,7 +151,7 @@ function Index() {
             <button
               onClick={toggleAdmin}
               className={cn(
-                "glass inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors hover:bg-white/10",
+                "glass inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors hover:bg-foreground/10",
                 admin ? "text-foreground" : "text-muted-foreground",
               )}
               aria-label={admin ? "Lock admin" : "Unlock admin"}
@@ -294,7 +294,7 @@ function KpiCard({
     <div className="glass p-4">
       <div className="flex items-center gap-2 text-muted-foreground text-[11px] uppercase tracking-wider">
         <span className={cn(
-          "inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5",
+          "inline-flex h-7 w-7 items-center justify-center rounded-md border border-foreground/10 bg-foreground/5",
           warn && "text-destructive",
         )}>
           {icon}
@@ -315,7 +315,7 @@ function PortfolioBar({ pct }: { pct: number }) {
   const capped = Math.min(pct, 100);
   const over = pct > 100;
   return (
-    <div className="h-2.5 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
+    <div className="h-2.5 w-full rounded-full bg-foreground/5 border border-foreground/10 overflow-hidden">
       <div
         className={cn("h-full rounded-full transition-all", over ? "bg-destructive" : "bg-foreground/85")}
         style={{ width: `${capped}%` }}
@@ -377,8 +377,8 @@ function TimelinePanel({ projects }: { projects: Project[] }) {
                 <div
                   className={cn(
                     "absolute top-1/2 -translate-y-1/2 h-2.5 rounded-full border overflow-hidden",
-                    overdue || costOver ? "border-destructive/40" : "border-white/15",
-                    "bg-white/[0.04]",
+                    overdue || costOver ? "border-destructive/40" : "border-foreground/15",
+                    "bg-foreground/5",
                   )}
                   style={{ left: `${start}%`, width: `${width}%` }}
                   title={`${fmtDate(p.createdAt)} → ${fmtDate(p.dueDate)}`}
@@ -436,17 +436,17 @@ function ProjectRow({
           </div>
           <p className="text-xs text-muted-foreground mt-0.5 inline-flex items-center gap-2">
             {project.client && <span>{project.client}</span>}
-            {project.client && <span className="text-white/20">·</span>}
+            {project.client && <span className="text-foreground/30">·</span>}
             <Calendar className="h-3 w-3" />
             <span className="tabular-nums">{fmtDate(project.createdAt)} → {fmtDate(project.dueDate)}</span>
           </p>
         </div>
         {admin && (
           <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon" onClick={onDuplicate} aria-label="Duplicate" className="hover:bg-white/10">
+            <Button variant="ghost" size="icon" onClick={onDuplicate} aria-label="Duplicate" className="hover:bg-foreground/10">
               <Copy className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={onEdit} aria-label="Edit" className="hover:bg-white/10">
+            <Button variant="ghost" size="icon" onClick={onEdit} aria-label="Edit" className="hover:bg-foreground/10">
               <Pencil className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="icon" onClick={onDelete} aria-label="Delete" className="hover:bg-destructive/20 hover:text-destructive">
@@ -498,7 +498,7 @@ function MetricBar({
           {left} <span className="text-muted-foreground">/</span> {right}
         </span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-foreground/5 border border-foreground/10 overflow-hidden">
         <div
           className={cn("h-full transition-all", over ? "bg-destructive" : "bg-foreground/85")}
           style={{ width: `${display}%` }}
@@ -514,9 +514,9 @@ function MetricBar({
 
 function StatusBadge({ status }: { status: Project["status"] }) {
   const map = {
-    active: { label: "Active", cls: "bg-white/10 text-foreground border-white/20" },
-    paused: { label: "Paused", cls: "bg-white/5 text-muted-foreground border-white/15" },
-    done: { label: "Done", cls: "bg-transparent text-muted-foreground border-white/10" },
+    active: { label: "Active", cls: "bg-foreground/10 text-foreground border-foreground/20" },
+    paused: { label: "Paused", cls: "bg-foreground/5 text-muted-foreground border-foreground/15" },
+    done: { label: "Done", cls: "bg-transparent text-muted-foreground border-foreground/10" },
   } as const;
   const s = map[status];
   return <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium", s.cls)}>{s.label}</span>;
@@ -544,7 +544,7 @@ function ProjectDialog({ initial, onSubmit }: { initial: Project | null; onSubmi
   const toDateInput = (ms?: number) => ms ? new Date(ms).toISOString().slice(0, 10) : "";
 
   return (
-    <DialogContent className="backdrop-blur-xl bg-popover/90 border-white/10">
+    <DialogContent className="backdrop-blur-xl bg-popover/90 border-foreground/10">
       <DialogHeader>
         <DialogTitle>{initial ? "Edit project" : "New project"}</DialogTitle>
       </DialogHeader>
@@ -606,7 +606,7 @@ function ProjectDialog({ initial, onSubmit }: { initial: Project | null; onSubmi
                   "flex-1 rounded-md border px-3 py-1.5 text-sm capitalize transition-colors",
                   form.status === s
                     ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-white/5 border-white/10 hover:bg-white/10",
+                    : "bg-foreground/5 border-foreground/10 hover:bg-foreground/10",
                 )}
               >
                 {s}
@@ -649,7 +649,7 @@ function PasscodeDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="backdrop-blur-xl bg-popover/90 border-white/10">
+      <DialogContent className="backdrop-blur-xl bg-popover/90 border-foreground/10">
         <DialogHeader>
           <DialogTitle>{isSetup ? "Set admin passcode" : "Unlock admin"}</DialogTitle>
         </DialogHeader>
