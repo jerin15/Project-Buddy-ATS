@@ -289,29 +289,21 @@ function KpiCard({
   icon: React.ReactNode; label: string; value: React.ReactNode; sub?: string;
   tone?: "neutral" | "ok" | "warn" | "primary";
 }) {
+  const warn = tone === "warn";
   return (
-    <div className="glass p-4 relative overflow-hidden">
-      <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full blur-2xl opacity-40 pointer-events-none"
-        style={{
-          background: tone === "warn" ? "oklch(0.7 0.22 25 / 0.6)"
-            : tone === "ok" ? "oklch(0.75 0.16 160 / 0.6)"
-            : tone === "primary" ? "oklch(0.72 0.16 250 / 0.6)"
-            : "oklch(0.75 0.14 200 / 0.5)",
-        }}
-      />
+    <div className="glass p-4">
       <div className="flex items-center gap-2 text-muted-foreground text-[11px] uppercase tracking-wider">
         <span className={cn(
-          "inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10",
-          tone === "warn" ? "bg-destructive/15 text-destructive" :
-          tone === "ok" ? "bg-success/15 text-success" :
-          tone === "primary" ? "bg-primary/15 text-primary" :
-          "bg-white/5 text-foreground",
+          "inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5",
+          warn && "text-destructive",
         )}>
           {icon}
         </span>
         {label}
       </div>
-      <div className="mt-2 text-2xl font-semibold tabular-nums inline-flex items-center">{value}</div>
+      <div className={cn("mt-2 text-2xl font-semibold tabular-nums inline-flex items-center", warn && "text-destructive")}>
+        {value}
+      </div>
       {sub && <div className="text-xs text-muted-foreground mt-1">{sub}</div>}
     </div>
   );
