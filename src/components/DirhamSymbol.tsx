@@ -1,27 +1,15 @@
 import { cn } from "@/lib/utils";
+import dirham from "@/assets/dirham.png.asset.json";
 
-/**
- * New UAE Dirham symbol — stylized "D" mark with two horizontal bars,
- * inspired by the 2024 Central Bank of the UAE dirham identity.
- */
-export function DirhamSymbol({ className, ...props }: React.SVGProps<SVGSVGElement>) {
+/** Official UAE Dirham symbol (2024 mark). */
+export function DirhamSymbol({ className, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className={cn("inline-block", className)}
+    <img
+      src={dirham.url}
+      alt="AED"
+      className={cn("inline-block object-contain dark:invert", className)}
+      style={{ height: "1em", width: "1em", ...props.style }}
       {...props}
-    >
-      {/* Two horizontal bars */}
-      <path d="M3 9h14" />
-      <path d="M3 15h14" />
-      {/* Curved D stem crossing both bars */}
-      <path d="M10 4c5 0 9 3.2 9 8s-4 8-9 8" />
-    </svg>
+    />
   );
 }
