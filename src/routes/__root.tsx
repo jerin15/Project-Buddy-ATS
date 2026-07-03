@@ -77,14 +77,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Project Tracker — AED Portfolio" },
+      { name: "description", content: "Track projects, timelines, hours and AED cost across your portfolio at a glance." },
+      { property: "og:title", content: "Project Tracker — AED Portfolio" },
+      { property: "og:description", content: "Track projects, timelines, hours and AED cost across your portfolio at a glance." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
