@@ -9,27 +9,68 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as ApiPublicBootstrapUsersRouteImport } from './routes/api/public/bootstrap-users'
 
-export interface FileRoutesByFullPath {}
-export interface FileRoutesByTo {}
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicBootstrapUsersRoute = ApiPublicBootstrapUsersRouteImport.update({
+  id: '/api/public/bootstrap-users',
+  path: '/api/public/bootstrap-users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+
+export interface FileRoutesByFullPath {
+  '/': typeof AuthenticatedRouteRoute
+  '/api/public/bootstrap-users': typeof ApiPublicBootstrapUsersRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof AuthenticatedRouteRoute
+  '/api/public/bootstrap-users': typeof ApiPublicBootstrapUsersRoute
+}
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteRoute
+  '/api/public/bootstrap-users': typeof ApiPublicBootstrapUsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: never
+  fullPaths: '/' | '/api/public/bootstrap-users'
   fileRoutesByTo: FileRoutesByTo
-  to: never
-  id: '__root__'
+  to: '/' | '/api/public/bootstrap-users'
+  id: '__root__' | '/_authenticated' | '/api/public/bootstrap-users'
   fileRoutesById: FileRoutesById
 }
-export interface RootRouteChildren {}
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {}
+export interface RootRouteChildren {
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRoute
+  ApiPublicBootstrapUsersRoute: typeof ApiPublicBootstrapUsersRoute
 }
 
-const rootRouteChildren: RootRouteChildren = {}
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/bootstrap-users': {
+      id: '/api/public/bootstrap-users'
+      path: '/api/public/bootstrap-users'
+      fullPath: '/api/public/bootstrap-users'
+      preLoaderRoute: typeof ApiPublicBootstrapUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRouteRoute: AuthenticatedRouteRoute,
+  ApiPublicBootstrapUsersRoute: ApiPublicBootstrapUsersRoute,
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
