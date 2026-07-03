@@ -36,9 +36,49 @@
   --font-mono: var(--font-mono);
 }
 
+/* --- Light (default) --- */
 :root {
   --radius: 0.875rem;
-  /* Monochrome, dark-first, glassmorphism */
+  --background: oklch(0.99 0.003 260);
+  --foreground: oklch(0.2 0.01 260);
+  --card: oklch(1 0 0 / 0.7);
+  --card-foreground: oklch(0.2 0.01 260);
+  --popover: oklch(1 0 0 / 0.98);
+  --popover-foreground: oklch(0.2 0.01 260);
+  --primary: oklch(0.22 0.01 260);
+  --primary-foreground: oklch(0.99 0.003 260);
+  --secondary: oklch(0.95 0.005 260);
+  --secondary-foreground: oklch(0.22 0.01 260);
+  --muted: oklch(0.95 0.005 260);
+  --muted-foreground: oklch(0.5 0.01 260);
+  --accent: oklch(0.95 0.005 260);
+  --accent-foreground: oklch(0.22 0.01 260);
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.99 0.005 260);
+  --success: oklch(0.22 0.01 260);
+  --success-foreground: oklch(0.99 0.003 260);
+  --warning: oklch(0.7 0.14 70);
+  --warning-foreground: oklch(0.2 0.02 60);
+  --border: oklch(0.2 0.01 260 / 0.12);
+  --input: oklch(0.2 0.01 260 / 0.15);
+  --ring: oklch(0.2 0.01 260 / 0.3);
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --glass-bg: oklch(1 0 0 / 0.55);
+  --glass-bg-strong: oklch(1 0 0 / 0.75);
+  --glass-border: oklch(0.2 0.01 260 / 0.1);
+  --glass-shadow: 0 10px 30px -18px oklch(0.2 0.05 260 / 0.35), 0 1px 0 0 oklch(1 0 0 / 0.6) inset;
+  --glass-blur: 20px;
+
+  --page-bg: oklch(0.985 0.004 260);
+  --page-wash-1: oklch(0.94 0.02 250 / 0.55);
+  --page-wash-2: oklch(0.94 0.02 200 / 0.5);
+  --line-color: oklch(0.2 0.01 260 / 0.08);
+}
+
+/* --- Dark --- */
+.dark {
   --background: oklch(0.16 0.005 260);
   --foreground: oklch(0.97 0.003 260);
   --card: oklch(0.24 0.006 260 / 0.55);
@@ -62,14 +102,16 @@
   --border: oklch(1 0 0 / 0.1);
   --input: oklch(1 0 0 / 0.14);
   --ring: oklch(1 0 0 / 0.3);
-  --font-display: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --glass-bg: oklch(1 0 0 / 0.05);
   --glass-bg-strong: oklch(1 0 0 / 0.08);
   --glass-border: oklch(1 0 0 / 0.1);
   --glass-shadow: 0 10px 40px -14px oklch(0 0 0 / 0.6), 0 1px 0 0 oklch(1 0 0 / 0.05) inset;
-  --glass-blur: 22px;
+
+  --page-bg: oklch(0.14 0.005 260);
+  --page-wash-1: oklch(0.28 0.005 260 / 0.9);
+  --page-wash-2: oklch(0.22 0.005 260 / 0.9);
+  --line-color: oklch(1 0 0 / 0.08);
 }
 
 @utility glass {
@@ -95,10 +137,10 @@
     color: var(--color-foreground);
     font-family: var(--font-display);
     font-feature-settings: "cv11", "ss01";
-    background-color: oklch(0.14 0.005 260);
+    background-color: var(--page-bg);
     background-image:
-      radial-gradient(70% 60% at 20% 0%, oklch(0.28 0.005 260 / 0.9), transparent 60%),
-      radial-gradient(60% 55% at 90% 100%, oklch(0.22 0.005 260 / 0.9), transparent 60%);
+      radial-gradient(70% 60% at 20% 0%, var(--page-wash-1), transparent 60%),
+      radial-gradient(60% 55% at 90% 100%, var(--page-wash-2), transparent 60%);
     background-attachment: fixed;
     background-repeat: no-repeat;
   }
