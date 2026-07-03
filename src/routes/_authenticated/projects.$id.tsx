@@ -280,7 +280,7 @@ function ProjectDetail() {
         {/* Activity */}
         <section className="glass p-5">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-            <Activity className="h-4 w-4" /> Recent activity
+            <ActivityIcon className="h-4 w-4" /> Recent activity
           </h2>
           {activity.length === 0 ? (
             <p className="mt-3 text-xs text-muted-foreground">No activity yet. Save changes to record history.</p>
