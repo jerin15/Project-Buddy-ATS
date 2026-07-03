@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Plus, Trash2, Clock, AlertTriangle, TrendingUp, Pencil, Check,
-  Lock, Unlock, Copy, Calendar, LayoutDashboard,
+  Lock, Unlock, Copy, Calendar,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,10 +136,10 @@ function Index() {
         <div className="mx-auto max-w-6xl px-5 py-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="glass-strong flex h-10 w-10 items-center justify-center shrink-0">
-              <LayoutDashboard className="h-5 w-5 text-primary" />
+              <DirhamSymbol className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-xl font-semibold tracking-tight text-gradient truncate">
+              <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">
                 Project Tracker
               </h1>
               <p className="text-[11px] sm:text-xs text-muted-foreground">
@@ -152,7 +152,7 @@ function Index() {
               onClick={toggleAdmin}
               className={cn(
                 "glass inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors hover:bg-white/10",
-                admin ? "text-success" : "text-muted-foreground",
+                admin ? "text-foreground" : "text-muted-foreground",
               )}
               aria-label={admin ? "Lock admin" : "Unlock admin"}
             >
@@ -222,7 +222,7 @@ function Index() {
                 </span>
               </div>
             </div>
-            <span className={cn("text-sm font-semibold tabular-nums", portfolioPct > 100 ? "text-destructive" : "text-primary")}>
+            <span className={cn("text-sm font-semibold tabular-nums", portfolioPct > 100 ? "text-destructive" : "text-foreground")}>
               {Math.round(portfolioPct)}%
             </span>
           </div>
@@ -289,29 +289,21 @@ function KpiCard({
   icon: React.ReactNode; label: string; value: React.ReactNode; sub?: string;
   tone?: "neutral" | "ok" | "warn" | "primary";
 }) {
+  const warn = tone === "warn";
   return (
-    <div className="glass p-4 relative overflow-hidden">
-      <div className="absolute -top-8 -right-8 h-24 w-24 rounded-full blur-2xl opacity-40 pointer-events-none"
-        style={{
-          background: tone === "warn" ? "oklch(0.7 0.22 25 / 0.6)"
-            : tone === "ok" ? "oklch(0.75 0.16 160 / 0.6)"
-            : tone === "primary" ? "oklch(0.72 0.16 250 / 0.6)"
-            : "oklch(0.75 0.14 200 / 0.5)",
-        }}
-      />
+    <div className="glass p-4">
       <div className="flex items-center gap-2 text-muted-foreground text-[11px] uppercase tracking-wider">
         <span className={cn(
-          "inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10",
-          tone === "warn" ? "bg-destructive/15 text-destructive" :
-          tone === "ok" ? "bg-success/15 text-success" :
-          tone === "primary" ? "bg-primary/15 text-primary" :
-          "bg-white/5 text-foreground",
+          "inline-flex h-7 w-7 items-center justify-center rounded-md border border-white/10 bg-white/5",
+          warn && "text-destructive",
         )}>
           {icon}
         </span>
         {label}
       </div>
-      <div className="mt-2 text-2xl font-semibold tabular-nums inline-flex items-center">{value}</div>
+      <div className={cn("mt-2 text-2xl font-semibold tabular-nums inline-flex items-center", warn && "text-destructive")}>
+        {value}
+      </div>
       {sub && <div className="text-xs text-muted-foreground mt-1">{sub}</div>}
     </div>
   );
@@ -323,14 +315,9 @@ function PortfolioBar({ pct }: { pct: number }) {
   const capped = Math.min(pct, 100);
   const over = pct > 100;
   return (
-    <div className="h-3 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
+    <div className="h-2.5 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
       <div
-        className={cn(
-          "h-full rounded-full transition-all",
-          over
-            ? "bg-gradient-to-r from-destructive to-orange-400"
-            : "bg-gradient-to-r from-primary via-accent to-primary",
-        )}
+        className={cn("h-full rounded-full transition-all", over ? "bg-destructive" : "bg-foreground/85")}
         style={{ width: `${capped}%` }}
       />
     </div>
@@ -369,7 +356,7 @@ function TimelinePanel({ projects }: { projects: Project[] }) {
 
       <div className="space-y-2.5 relative">
         {/* today line */}
-        <div className="absolute inset-y-0 w-px bg-primary/40" style={{ left: `${pos(now)}%` }} />
+        <div className="absolute inset-y-0 w-px bg-foreground/40" style={{ left: `${pos(now)}%` }} />
 
         {projects.map((p) => {
           const start = pos(p.createdAt);
@@ -399,11 +386,9 @@ function TimelinePanel({ projects }: { projects: Project[] }) {
                   <div
                     className={cn(
                       "h-full",
-                      overdue ? "bg-destructive/70" :
-                      costOver ? "bg-gradient-to-r from-destructive to-orange-400" :
-                      p.status === "done" ? "bg-success/70" :
-                      p.status === "paused" ? "bg-warning/70" :
-                      "bg-gradient-to-r from-primary to-accent",
+                      overdue || costOver ? "bg-destructive/80" :
+                      p.status === "paused" ? "bg-muted-foreground/60" :
+                      "bg-foreground/80",
                     )}
                     style={{ width: `${elapsed}%` }}
                   />
@@ -513,13 +498,9 @@ function MetricBar({
           {left} <span className="text-muted-foreground">/</span> {right}
         </span>
       </div>
-      <div className="h-2 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
         <div
-          className={cn(
-            "h-full transition-all",
-            over ? "bg-gradient-to-r from-destructive to-orange-400"
-                 : "bg-gradient-to-r from-primary to-accent",
-          )}
+          className={cn("h-full transition-all", over ? "bg-destructive" : "bg-foreground/85")}
           style={{ width: `${display}%` }}
         />
       </div>
@@ -533,9 +514,9 @@ function MetricBar({
 
 function StatusBadge({ status }: { status: Project["status"] }) {
   const map = {
-    active: { label: "Active", cls: "bg-success/15 text-success border-success/30" },
-    paused: { label: "Paused", cls: "bg-warning/15 text-warning border-warning/30" },
-    done: { label: "Done", cls: "bg-white/10 text-muted-foreground border-white/15" },
+    active: { label: "Active", cls: "bg-white/10 text-foreground border-white/20" },
+    paused: { label: "Paused", cls: "bg-white/5 text-muted-foreground border-white/15" },
+    done: { label: "Done", cls: "bg-transparent text-muted-foreground border-white/10" },
   } as const;
   const s = map[status];
   return <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium", s.cls)}>{s.label}</span>;
