@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  ArrowLeft, Save, Trash2, Clock, AlertTriangle, Calendar, User, Activity,
+  ArrowLeft, Save, Trash2, Clock, AlertTriangle, Calendar, User, Activity as ActivityIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
