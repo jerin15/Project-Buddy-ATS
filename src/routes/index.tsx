@@ -356,7 +356,7 @@ function TimelinePanel({ projects }: { projects: Project[] }) {
 
       <div className="space-y-2.5 relative">
         {/* today line */}
-        <div className="absolute inset-y-0 w-px bg-primary/40" style={{ left: `${pos(now)}%` }} />
+        <div className="absolute inset-y-0 w-px bg-foreground/40" style={{ left: `${pos(now)}%` }} />
 
         {projects.map((p) => {
           const start = pos(p.createdAt);
