@@ -498,13 +498,9 @@ function MetricBar({
           {left} <span className="text-muted-foreground">/</span> {right}
         </span>
       </div>
-      <div className="h-2 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-white/5 border border-white/10 overflow-hidden">
         <div
-          className={cn(
-            "h-full transition-all",
-            over ? "bg-gradient-to-r from-destructive to-orange-400"
-                 : "bg-gradient-to-r from-primary to-accent",
-          )}
+          className={cn("h-full transition-all", over ? "bg-destructive" : "bg-foreground/85")}
           style={{ width: `${display}%` }}
         />
       </div>
