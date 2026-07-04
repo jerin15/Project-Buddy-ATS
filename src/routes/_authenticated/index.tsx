@@ -7,10 +7,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { AnimaLogo } from "@/components/AnimaLogo";
 import { Dirham, Aed } from "@/components/Dirham";
@@ -382,25 +386,71 @@ function StatusBadge({ status }: { status: Project["status"] }) {
 /* -------- New project dialog -------- */
 
 function ProjectDialog({ onDone }: { onDone: () => void }) {
+  const today = new Date().toISOString().slice(0, 10);
   const [name, setName] = useState("");
   const [client, setClient] = useState("");
-  const [budgetCost, setBudgetCost] = useState("");
-  const [budgetHours, setBudgetHours] = useState("");
+  const [description, setDescription] = useState("");
+  const [status, setStatus] = useState<Project["status"]>("active");
+  const [startDate, setStartDate] = useState(today);
   const [dueDate, setDueDate] = useState("");
+  const [hoursPerDay, setHoursPerDay] = useState("8");
+  const [includeWeekends, setIncludeWeekends] = useState(false);
+  const [budgetHours, setBudgetHours] = useState("");
+  const [hoursManual, setHoursManual] = useState(false);
+  const [budgetCost, setBudgetCost] = useState("");
+  const [spentCost, setSpentCost] = useState("");
+  const [spentHours, setSpentHours] = useState("");
   const [busy, setBusy] = useState(false);
+
+  // Auto-calc budget hours from date range × hours/day (working days by default)
+  const autoHours = useMemo(() => {
+    if (!startDate || !dueDate) return 0;
+    const s = new Date(startDate + "T00:00:00");
+    const e = new Date(dueDate + "T00:00:00");
+    if (isNaN(s.getTime()) || isNaN(e.getTime()) || e < s) return 0;
+    let days = 0;
+    for (let d = new Date(s); d <= e; d.setDate(d.getDate() + 1)) {
+      const dow = d.getDay();
+      if (includeWeekends || (dow !== 0 && dow !== 6)) days += 1;
+    }
+    return Math.round(days * (Number(hoursPerDay) || 0));
+  }, [startDate, dueDate, hoursPerDay, includeWeekends]);
+
+  useEffect(() => {
+    if (!hoursManual) setBudgetHours(autoHours ? String(autoHours) : "");
+  }, [autoHours, hoursManual]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim()) return;
     setBusy(true);
     const { data: userRes } = await supabase.auth.getUser();
-    const { error } = await supabase.from("projects").insert({
-      name: name.trim(),
-      client: client.trim() || null,
-      budget_cost: Number(budgetCost) || 0,
-      budget_hours: Number(budgetHours) || 0,
-      due_date: dueDate || null,
-      created_by: userRes.user?.id ?? null,
-    });
+    const { data: inserted, error } = await supabase
+      .from("projects")
+      .insert({
+        name: name.trim(),
+        client: client.trim() || null,
+        description: description.trim() || null,
+        status,
+        start_date: startDate || today,
+        due_date: dueDate || null,
+        budget_cost: Number(budgetCost) || 0,
+        budget_hours: Number(budgetHours) || 0,
+        spent_cost: Number(spentCost) || 0,
+        spent_hours: Number(spentHours) || 0,
+        created_by: userRes.user?.id ?? null,
+      })
+      .select()
+      .single();
+    if (!error && inserted) {
+      await supabase.from("project_activity").insert({
+        project_id: inserted.id,
+        user_id: userRes.user?.id ?? null,
+        user_email: userRes.user?.email ?? null,
+        action: "created",
+        details: { name: inserted.name },
+      });
+    }
     setBusy(false);
     if (error) {
       toast.error(error.message);
@@ -411,33 +461,108 @@ function ProjectDialog({ onDone }: { onDone: () => void }) {
   };
 
   return (
-    <DialogContent>
+    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
       <DialogHeader>
         <DialogTitle>New project</DialogTitle>
+        <DialogDescription className="text-xs">
+          Any dates allowed — including past dates so you can back-fill existing projects.
+        </DialogDescription>
       </DialogHeader>
-      <form onSubmit={submit} className="space-y-3">
-        <div className="space-y-1.5">
-          <Label>Name</Label>
-          <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Website redesign" />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Client</Label>
-          <Input value={client} onChange={(e) => setClient(e.target.value)} placeholder="Acme Co." />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1.5">
-            <Label>Budget (AED)</Label>
-            <Input type="number" min="0" value={budgetCost} onChange={(e) => setBudgetCost(e.target.value)} />
+      <form onSubmit={submit} className="space-y-4">
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>Project name *</Label>
+            <Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Website redesign" />
           </div>
           <div className="space-y-1.5">
-            <Label>Budget (hours)</Label>
-            <Input type="number" min="0" value={budgetHours} onChange={(e) => setBudgetHours(e.target.value)} />
+            <Label>Client</Label>
+            <Input value={client} onChange={(e) => setClient(e.target.value)} placeholder="Acme Co." />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Status</Label>
+            <Select value={status} onValueChange={(v) => setStatus(v as Project["status"])}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="paused">Paused</SelectItem>
+                <SelectItem value="done">Done</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label>Description / notes</Label>
+            <Textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Scope, deliverables, links…" />
           </div>
         </div>
-        <div className="space-y-1.5">
-          <Label>Due date</Label>
-          <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+
+        <div className="rounded-lg border border-foreground/10 p-3 space-y-3 bg-foreground/[0.02]">
+          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Timeline</div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label>Start date</Label>
+              <Input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Due date</Label>
+              <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Hours per working day</Label>
+              <Input type="number" min="0" step="0.5" value={hoursPerDay} onChange={(e) => setHoursPerDay(e.target.value)} />
+            </div>
+            <label className="flex items-end gap-2 pb-2 text-xs text-muted-foreground select-none cursor-pointer">
+              <input
+                type="checkbox"
+                checked={includeWeekends}
+                onChange={(e) => setIncludeWeekends(e.target.checked)}
+                className="h-4 w-4 accent-foreground"
+              />
+              Include weekends
+            </label>
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            Auto-calculated: <span className="font-medium text-foreground tabular-nums">{autoHours}h</span> across{" "}
+            {startDate && dueDate ? "the selected range" : "—"}. Override below if needed.
+          </p>
         </div>
+
+        <div className="rounded-lg border border-foreground/10 p-3 space-y-3 bg-foreground/[0.02]">
+          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Budget & tracking</div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label>Budget (AED)</Label>
+              <Input type="number" min="0" value={budgetCost} onChange={(e) => setBudgetCost(e.target.value)} placeholder="0" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="flex items-center justify-between">
+                <span>Budget (hours)</span>
+                {hoursManual && (
+                  <button type="button" onClick={() => { setHoursManual(false); }} className="text-[10px] text-muted-foreground underline">
+                    reset to auto
+                  </button>
+                )}
+              </Label>
+              <Input
+                type="number"
+                min="0"
+                value={budgetHours}
+                onChange={(e) => { setBudgetHours(e.target.value); setHoursManual(true); }}
+                placeholder={String(autoHours)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Already spent (AED)</Label>
+              <Input type="number" min="0" value={spentCost} onChange={(e) => setSpentCost(e.target.value)} placeholder="0" />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Hours already logged</Label>
+              <Input type="number" min="0" value={spentHours} onChange={(e) => setSpentHours(e.target.value)} placeholder="0" />
+            </div>
+          </div>
+        </div>
+
         <DialogFooter>
           <Button type="submit" disabled={busy || !name.trim()}>
             {busy ? "Creating…" : "Create project"}
