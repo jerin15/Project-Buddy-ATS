@@ -232,6 +232,10 @@ function ProjectDetail() {
           </div>
         </section>
 
+        <TimeTracker projectId={project.id} />
+        <Expenses projectId={project.id} />
+
+
         {/* Edit */}
         <section className="glass p-5 space-y-4">
           <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Details</h2>
