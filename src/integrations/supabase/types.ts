@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      expenses: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          expense_date: string
+          id: string
+          invoice_number: string | null
+          project_id: string
+          updated_at: string
+          user_email: string | null
+          user_id: string | null
+          vendor: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          expense_date?: string
+          id?: string
+          invoice_number?: string | null
+          project_id: string
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string | null
+          vendor?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          expense_date?: string
+          id?: string
+          invoice_number?: string | null
+          project_id?: string
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string | null
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_activity: {
         Row: {
           action: string
@@ -102,6 +152,56 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      time_entries: {
+        Row: {
+          created_at: string
+          hours: number
+          id: string
+          note: string | null
+          project_id: string
+          punch_in: string
+          punch_out: string | null
+          updated_at: string
+          user_email: string | null
+          user_id: string | null
+          work_date: string
+        }
+        Insert: {
+          created_at?: string
+          hours?: number
+          id?: string
+          note?: string | null
+          project_id: string
+          punch_in?: string
+          punch_out?: string | null
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string | null
+          work_date?: string
+        }
+        Update: {
+          created_at?: string
+          hours?: number
+          id?: string
+          note?: string | null
+          project_id?: string
+          punch_in?: string
+          punch_out?: string | null
+          updated_at?: string
+          user_email?: string | null
+          user_id?: string | null
+          work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "time_entries_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
