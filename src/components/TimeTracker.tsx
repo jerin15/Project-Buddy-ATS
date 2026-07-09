@@ -17,27 +17,6 @@ type TimeEntry = {
   note: string | null;
 };
 
-// Dubai working window (09:00-18:00)
-function dubaiParts(d: Date) {
-  const fmt = new Intl.DateTimeFormat("en-GB", {
-    timeZone: "Asia/Dubai",
-    year: "numeric", month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
-  });
-  const p: Record<string, string> = {};
-  for (const part of fmt.formatToParts(d)) if (part.type !== "literal") p[part.type] = part.value;
-  return p;
-}
-function dubaiClamped(now: Date) {
-  const p = dubaiParts(now);
-  const h = Number(p.hour), m = Number(p.minute), s = Number(p.second);
-  const secs = h * 3600 + m * 60 + s;
-  const startSecs = 9 * 3600;
-  const endSecs = 18 * 3600;
-  const clamped = Math.max(startSecs, Math.min(endSecs, secs));
-  return { secs, clamped, before: secs < startSecs, after: secs > endSecs, dateKey: `${p.year}-${p.month}-${p.day}` };
-}
-
 function fmtDur(seconds: number) {
   const s = Math.max(0, Math.floor(seconds));
   const h = Math.floor(s / 3600);
@@ -105,21 +84,14 @@ export function TimeTracker({ projectId }: { projectId: string }) {
     };
   }, [projectId]);
 
-  // My open session (punch_out null)
   const open = useMemo(
     () => entries.find((e) => e.punch_out === null && (me.id ? e.user_id === me.id : e.user_email === me.email)),
     [entries, me],
   );
 
-  const window = dubaiClamped(now);
-  const outsideWindow = window.after;
-
   const liveSeconds = useMemo(() => {
     if (!open) return 0;
-    const start = new Date(open.punch_in).getTime();
-    const nowClampedIso = clampedNowIso(now);
-    const end = new Date(nowClampedIso).getTime();
-    return Math.max(0, (end - start) / 1000);
+    return Math.max(0, (now.getTime() - new Date(open.punch_in).getTime()) / 1000);
   }, [open, now]);
 
   const punchIn = async () => {
@@ -139,10 +111,9 @@ export function TimeTracker({ projectId }: { projectId: string }) {
   const punchOut = async () => {
     if (busy || !open) return;
     setBusy(true);
-    const stopAt = clampedNowIso(new Date());
     const { error } = await supabase
       .from("time_entries" as never)
-      .update({ punch_out: stopAt } as never)
+      .update({ punch_out: new Date().toISOString() } as never)
       .eq("id", open.id);
     setBusy(false);
     if (error) toast.error(error.message);
@@ -154,43 +125,19 @@ export function TimeTracker({ projectId }: { projectId: string }) {
     if (error) toast.error(error.message);
   };
 
-  // Auto-close: if user has an open session and Dubai time is past 18:00, punch out to 18:00
-  useEffect(() => {
-    if (!open) return;
-    if (!outsideWindow) return;
-    const stopAt = clampedNowIso(now);
-    supabase
-      .from("time_entries" as never)
-      .update({ punch_out: stopAt } as never)
-      .eq("id", open.id)
-      .then(({ error }) => {
-        if (!error) toast.message("Auto punched out at 18:00 (Dubai)");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [outsideWindow, open?.id]);
-
   return (
     <section className="glass p-5 space-y-4">
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-          <Clock className="h-4 w-4" /> Time tracking
-        </h2>
-        <div className="text-[11px] text-muted-foreground">
-          Working window: 09:00 – 18:00 Dubai · hours stop accruing outside
-        </div>
-      </div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+        <Clock className="h-4 w-4" /> Time tracking
+      </h2>
 
       <div className="flex items-center justify-between gap-4 flex-wrap rounded-lg border border-foreground/10 bg-foreground/[0.02] p-4">
         <div className="flex items-baseline gap-3">
-          <div className={cn("text-3xl font-semibold tabular-nums", open && !outsideWindow && "text-emerald-500 dark:text-emerald-400")}>
+          <div className={cn("text-3xl font-semibold tabular-nums", open && "text-emerald-500 dark:text-emerald-400")}>
             {fmtDur(liveSeconds)}
           </div>
           <div className="text-xs text-muted-foreground">
-            {open ? (
-              <>Running since {fmtTime(open.punch_in)}{outsideWindow && " · stopped at 18:00"}</>
-            ) : (
-              "No active session"
-            )}
+            {open ? <>Running since {fmtTime(open.punch_in)}</> : "No active session"}
           </div>
         </div>
         {open ? (
@@ -198,8 +145,8 @@ export function TimeTracker({ projectId }: { projectId: string }) {
             <Square className="h-4 w-4" /> Punch out
           </Button>
         ) : (
-          <Button onClick={punchIn} disabled={busy || outsideWindow} size="sm">
-            <Play className="h-4 w-4" /> {outsideWindow ? "Outside window" : "Punch in"}
+          <Button onClick={punchIn} disabled={busy} size="sm">
+            <Play className="h-4 w-4" /> Punch in
           </Button>
         )}
       </div>
@@ -238,16 +185,4 @@ export function TimeTracker({ projectId }: { projectId: string }) {
       </div>
     </section>
   );
-}
-
-// clamp "now" to today's 09:00-18:00 Dubai window, return ISO
-function clampedNowIso(now: Date) {
-  const p = dubaiParts(now);
-  const h = Number(p.hour), m = Number(p.minute), s = Number(p.second);
-  const secs = h * 3600 + m * 60 + s;
-  const startSecs = 9 * 3600, endSecs = 18 * 3600;
-  if (secs >= startSecs && secs <= endSecs) return now.toISOString();
-  const clamped = Math.max(startSecs, Math.min(endSecs, secs));
-  const delta = (secs - clamped) * 1000;
-  return new Date(now.getTime() - delta).toISOString();
 }
