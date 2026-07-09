@@ -20,6 +20,8 @@ import { Dirham, Aed } from "@/components/Dirham";
 import { fmtDate, isOverBudget, isOverTime, isOverdue, type Project } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { TimeTracker } from "@/components/TimeTracker";
+import { Expenses } from "@/components/Expenses";
 
 type Activity = {
   id: string;
@@ -229,6 +231,10 @@ function ProjectDetail() {
             />
           </div>
         </section>
+
+        <TimeTracker projectId={project.id} />
+        <Expenses projectId={project.id} />
+
 
         {/* Edit */}
         <section className="glass p-5 space-y-4">
