@@ -19,10 +19,20 @@ function Settings() {
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
+  const { prefs, save } = useUserPrefs();
+  const [prefBusy, setPrefBusy] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? ""));
   }, []);
+
+  const savePrefs = async (patch: Parameters<typeof save>[0]) => {
+    setPrefBusy(true);
+    const { error } = await save(patch);
+    setPrefBusy(false);
+    if (error) toast.error(error.message);
+    else toast.success("Preferences saved");
+  };
 
   const changePassword = async (e: React.FormEvent) => {
     e.preventDefault();
