@@ -21,6 +21,7 @@ import { Dirham, Aed } from "@/components/Dirham";
 import { fmtDate, isOverBudget, isOverTime, isOverdue, type Project } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { PunchReminder } from "@/components/PunchReminder";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
