@@ -8,7 +8,7 @@ export const fmtDate = (d?: string | null) =>
     ? new Date(d).toLocaleDateString("en-AE", { day: "2-digit", month: "short", year: "numeric" })
     : "—";
 
-export const dirhamSrc = dirhamAsset.url;
+export const dirhamSrc = dirhamUrl;
 
 export type Project = {
   id: string;
