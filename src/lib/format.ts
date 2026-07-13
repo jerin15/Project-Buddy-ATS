@@ -1,4 +1,4 @@
-import dirhamAsset from "@/assets/dirham.png.asset.json";
+import dirhamUrl from "@/assets/local/dirham.png";
 
 const aedFmt = new Intl.NumberFormat("en-AE", { maximumFractionDigits: 0 });
 export const fmtAED = (n: number) => aedFmt.format(Math.round(Number(n) || 0));
