@@ -125,7 +125,7 @@ export function TimeTracker({ projectId }: { projectId: string }) {
       const { data } = await supabase
         .from("time_entries" as never)
         .select("hours,punch_in,punch_out")
-        .eq("user_id", me.id)
+        .eq("user_id", uid)
         .eq("work_date", today);
       const rows = (data ?? []) as unknown as { hours: number; punch_in: string; punch_out: string | null }[];
       const sum = rows.reduce((a, r) => {
