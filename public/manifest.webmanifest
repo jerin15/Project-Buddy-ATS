@@ -10,13 +10,13 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "/__l5e/assets-v1/d5458690-b02c-4cf3-bf19-09738ec70b0f/anima-logo.png",
+      "src": "/anima-logo.png",
       "sizes": "192x192 512x512 any",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/__l5e/assets-v1/d5458690-b02c-4cf3-bf19-09738ec70b0f/anima-logo.png",
+      "src": "/anima-logo.png",
       "sizes": "192x192 512x512 any",
       "type": "image/png",
       "purpose": "maskable"
