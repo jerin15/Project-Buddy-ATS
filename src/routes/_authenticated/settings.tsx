@@ -99,6 +99,55 @@ function Settings() {
             Default password is <span className="font-mono">ATS@2026</span>. Change it any time.
           </p>
         </section>
+
+        <section className="glass p-5">
+          <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+            <Bell className="h-4 w-4" /> Time tracking preferences
+          </h2>
+          <div className="mt-4 grid sm:grid-cols-2 gap-4 max-w-lg">
+            <div className="space-y-1.5">
+              <Label>Punch-in reminder time</Label>
+              <Input
+                type="time"
+                value={(prefs?.reminder_time ?? "09:00").slice(0, 5)}
+                onChange={(e) => savePrefs({ reminder_time: `${e.target.value}:00` })}
+                disabled={prefBusy}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Daily hour cap (0 = none)</Label>
+              <Input
+                type="number"
+                min="0"
+                step="0.5"
+                value={prefs?.daily_hour_cap ?? 0}
+                onChange={(e) => savePrefs({ daily_hour_cap: Number(e.target.value) || 0 })}
+                disabled={prefBusy}
+              />
+            </div>
+            <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-foreground"
+                checked={prefs?.reminder_enabled ?? true}
+                onChange={(e) => savePrefs({ reminder_enabled: e.target.checked })}
+              />
+              Daily punch-in reminder
+            </label>
+            <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-foreground"
+                checked={prefs?.idle_auto_punch_out ?? true}
+                onChange={(e) => savePrefs({ idle_auto_punch_out: e.target.checked })}
+              />
+              Auto punch-out when idle (15 min)
+            </label>
+          </div>
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            Reminder uses your timezone: <span className="font-medium text-foreground">{prefs?.timezone ?? "Asia/Dubai"}</span>. Browser notifications require permission.
+          </p>
+        </section>
       </main>
     </div>
   );
