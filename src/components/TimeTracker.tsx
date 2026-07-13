@@ -118,7 +118,8 @@ export function TimeTracker({ projectId }: { projectId: string }) {
   // Total hours today across all projects for the current user.
   const [todayHours, setTodayHours] = useState(0);
   useEffect(() => {
-    if (!me.id) return;
+    const uid = me.id;
+    if (!uid) return;
     const today = new Date().toLocaleDateString("en-CA", { timeZone: prefs?.timezone || "Asia/Dubai" });
     (async () => {
       const { data } = await supabase
