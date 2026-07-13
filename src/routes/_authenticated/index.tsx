@@ -21,6 +21,7 @@ import { Dirham, Aed } from "@/components/Dirham";
 import { fmtDate, isOverBudget, isOverTime, isOverdue, type Project } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { PunchReminder } from "@/components/PunchReminder";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -110,6 +111,7 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen">
+      <PunchReminder />
       <header className="sticky top-0 z-30 border-b border-foreground/10 bg-background/60 backdrop-blur-xl">
         <div className="mx-auto max-w-6xl px-5 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
