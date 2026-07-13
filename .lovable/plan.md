@@ -1,32 +1,56 @@
-# Light-mode default + theme toggle + fix AED logo visibility
 
-## Problem
-- The portal renders dark by default, but the dirham PNG is a black glyph. It only inverts inside `.dark` — since the app never sets that class, the logo stays black on the dark background and disappears.
-- User wants a bright/white UI as default and the ability to toggle between light and dark.
+# Enhancement Rollout Plan
 
-## Changes
+Grouped into 4 shippable batches so we can land value fast and stop/adjust between rounds.
 
-### 1. Light theme as default
-`src/styles.css`
-- Rewrite `:root` tokens for a bright, near-white glassmorphism scheme: off-white background, subtle cool-grey gradient wash, dark foreground text, white translucent glass panels with soft grey borders and gentle shadow.
-- Move the current dark tokens under `.dark { … }` (unchanged look, just gated).
-- Update `body` background so both modes swap cleanly.
+---
 
-### 2. Theme toggle
-- Add a `ThemeToggle` control in the header next to the admin lock — sun/moon icon button styled with the existing `glass` utility.
-- State stored in `localStorage` key `tracker.theme.v1` (`"light" | "dark"`); defaults to `"light"`.
-- Applies by toggling the `dark` class on `document.documentElement`. Runs on mount, no flash concern for a client-only app.
+## Batch 1 — Time & productivity
 
-### 3. Fix AED logo visibility (both modes)
-`src/components/DirhamSymbol.tsx`
-- Remove `dark:invert`. Instead invert in **light** mode too when the logo sits on a dark background is not needed — in light mode we want the black glyph (visible on white); in dark mode we want the white/inverted glyph.
-- Correct rule: **default black** for light; **`dark:invert`** flips to white for dark mode. This already matches once `.dark` is actually applied. The fix is really "make `.dark` get applied" (item 2) plus ensuring the icon size renders (currently `1em`, but some usages force `h-3 w-3` which override to a small square — fine).
+- **Punch-in reminder** (browser notification + toast) at a user-configurable time (default 09:00). Stored per-user in `user_prefs` table.
+- **Idle detection**: if no mouse/keyboard for 10 min while punched in, prompt "still working?" — auto-punch-out after 5 min silence, keeping the punch-out at last-active timestamp.
+- **Pomodoro / focus mode**: 25/5 timer overlay on project page, optional.
+- **Timesheet export**: CSV export of `time_entries` filtered by date range / project / user (client-side generation).
+- **Auto-stop at custom cap**: optional daily hour cap per user; when reached, prompt to punch out.
 
-## Files touched
-- `src/styles.css` — swap default palette to light; keep dark under `.dark`.
-- `src/routes/index.tsx` — add theme toggle button and mount effect.
-- No new deps.
+## Batch 2 — Project intelligence
 
-## Out of scope
-- System-preference auto-detection (can add if desired).
-- Per-component color audit — palette stays monochrome as before.
+- **Burn-down chart** on project detail: budget hours vs cumulative logged hours over time (Recharts).
+- **Forecast**: project completion date based on rolling 7-day pace vs remaining hours.
+- **Overrun alerts**: dashboard banner + toast when a project crosses 80% / 100% of budget or hours.
+- **Profitability view**: per project = `budget_cost − spent_cost − expenses`, and portfolio roll-up on dashboard.
+- **Activity feed** on project detail (already have `project_activity` — surface it).
+
+## Batch 3 — Expenses & invoicing
+
+- **Receipt upload**: attach an image/PDF per expense via Lovable Cloud Storage (`expense-receipts` bucket, RLS).
+- **Recurring expenses**: mark an expense as recurring monthly; scheduled server function auto-creates the next month's copy.
+- **Expense categories**: add `category` column (Software, Travel, Contractor, Hardware, Other) with filter + per-category totals.
+- **One-click invoice**: generate a printable HTML invoice from a project (client info + logged hours × rate + expenses), print-to-PDF.
+- **Project hourly rate** field so invoices compute correctly.
+
+## Batch 4 — Team & UX polish
+
+- **Roles**: `user_roles` table + `has_role()` security-definer function. Roles: `admin`, `member`. Admins see all projects; members see projects they created or are assigned to.
+- **Per-user dashboard tab**: "My hours this week", "My open projects", "My expenses this month".
+- **Global command palette** (⌘K / Ctrl-K): jump to project, new project, punch in/out, new expense.
+- **Keyboard shortcuts**: `P` new project, `T` punch toggle on project page, `E` new expense, `/` focus search.
+- **Offline PWA**: service worker caching shell + last-viewed projects; queued punch/expense writes sync when back online.
+
+---
+
+## Recommended order
+
+Batch 1 → Batch 2 → Batch 3 → Batch 4. Each batch is independently shippable and ~1–2 iterations.
+
+## Technical notes
+
+- New tables: `user_prefs` (punch-in reminder time, daily cap, timezone), `user_roles` (+ enum + `has_role()`), `expense_categories` values via enum column, `expense_receipts` storage bucket.
+- New columns: `projects.hourly_rate numeric`, `expenses.category text`, `expenses.is_recurring boolean`, `expenses.recurring_day int`, `expenses.receipt_path text`.
+- New server functions: `generate_invoice`, `run_recurring_expenses` (called by pg_cron daily).
+- Realtime already enabled on `projects`, `time_entries`, `expenses`; extend to `project_activity`.
+- All new client work stays in existing `src/routes/_authenticated/*` and `src/components/*`.
+
+## What I'd like from you
+
+Confirm the order above (Batch 1 first) or tell me which batch to start with. I'll ship one batch at a time so we can review each round.

@@ -203,6 +203,39 @@ export type Database = {
           },
         ]
       }
+      user_prefs: {
+        Row: {
+          created_at: string
+          daily_hour_cap: number
+          idle_auto_punch_out: boolean
+          reminder_enabled: boolean
+          reminder_time: string
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_hour_cap?: number
+          idle_auto_punch_out?: boolean
+          reminder_enabled?: boolean
+          reminder_time?: string
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_hour_cap?: number
+          idle_auto_punch_out?: boolean
+          reminder_enabled?: boolean
+          reminder_time?: string
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
